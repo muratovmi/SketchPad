@@ -27,7 +27,7 @@
 
             <SeekBar
                 android:id="@+id/brush_thickness_seek_bar"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="9dp"
                 android:max="@integer/seek_bar_max"
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1.5"
-            android:background="@drawable/bg"
+            android:background="@drawable/background"
             android:layout_gravity="center_vertical"
             android:id="@+id/oper_recyclerview"></androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>

@@ -11,7 +11,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="150dp"
         android:gravity="center"
-        android:text="SketchPad"
+        android:text="@string/app_name"
         android:id="@+id/label_textview"
         android:textStyle="bold"
         android:textColor="#04B4AE"

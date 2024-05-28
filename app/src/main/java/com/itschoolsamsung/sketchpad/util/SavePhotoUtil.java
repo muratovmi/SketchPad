@@ -92,7 +92,7 @@ public class SavePhotoUtil {
             OutputStream thumbOut = cr.openOutputStream(url);
             thumb.compress(Bitmap.CompressFormat.PNG, 100, thumbOut);
             thumbOut.close();
-        } catch (IOException ex) {
+        } catch (IOException ignored) {
         }
     }
 }

@@ -2,6 +2,7 @@ package com.itschoolsamsung.sketchpad.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -208,16 +209,24 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
         fileNameInput.setHint(R.string.file_name);
         fileNameInput.setSingleLine(true);
         mBuilder.setView(fileNameInput);
-        mBuilder.setPositiveButton("Yes", (dialog, which) -> {
-            InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            keyboardManager.hideSoftInputFromWindow(Objects.requireNonNull(getCurrentFocus()).getWindowToken(), 0);
-            final String fileName = fileNameInput.getText().toString();
-            dialog.cancel();
-            // Небольшая задержка во избежание обрезки холста при сохранении в галерею.
-            if (!fileName.trim().isEmpty()) {
-                mHandler.postDelayed(() -> saveImageToGallery(fileName), 1000);
-            } else {
-                Toast.makeText(DrawingBoard.this, "Image can't be saved without a name", Toast.LENGTH_SHORT).show();
+        mBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                keyboardManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                final String fileName = fileNameInput.getText().toString();
+                dialog.cancel();
+                // Небольшая задержка во избежание обрезки холста при сохранении в галерею.
+                if (fileName.toString().trim().length() > 0) {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            saveImageToGallery(fileName);
+                        }
+                    }, 1000);
+                } else {
+                    Toast.makeText(DrawingBoard.this, "Image can't be saved without a name", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         mBuilder.setNegativeButton("No", (dialog, which) -> dialog.cancel());

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sketch Board</string>
+    <string name="app_name">SketchPad</string>
     <string name="action_settings">Settings</string>
     <array name="operation_icon">
         <item>"brush"</item>
