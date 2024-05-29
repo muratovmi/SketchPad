@@ -140,7 +140,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_ERASE);
                 break;
             case Constants.OPERATION_CLEAR_CANVAS:
-                mBuilder = new AlertDialog.Builder(DrawingBoard.this);
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(DrawingBoard.this);
                 mBuilder.setTitle("New Drawing?");
                 mBuilder.setMessage("Start new drawing (you will lose the current drawing)?");
                 mBuilder.setPositiveButton("Yes", (dialog, which) -> {
@@ -148,7 +148,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
                     dialog.cancel();
                 });
                 mBuilder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
-                mDialog = mBuilder.create();
+                AlertDialog mDialog = mBuilder.create();
                 mDialog.show();
                 mDialog.setCanceledOnTouchOutside(false);
                 break;
@@ -171,7 +171,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
             case Constants.OPERATION_DRAW_OVAL:
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_OVAL);
                 mPaintCanvas.changeFillStyle(Constants.PAINT_STYLE_FILL);
-                drawRectangleOnBoard();
+                drawCircleOnBoard(); // Changed method name
                 break;
             case Constants.OPERATION_INSERT_TEXT:
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_INSERT_TEXT);
@@ -212,8 +212,10 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
         mBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                keyboardManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                if (getCurrentFocus() != null) {
+                    InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    keyboardManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+                }
                 final String fileName = fileNameInput.getText().toString();
                 dialog.cancel();
                 // Небольшая задержка во избежание обрезки холста при сохранении в галерею.
