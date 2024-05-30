@@ -15,13 +15,6 @@ public class Circle extends Shape {
         this.circleColor = circleColor;
     }
 
-    public Circle(Circle circle) {
-        this.centerX = circle.getCenterX();
-        this.centerY = circle.getCenterY();
-        this.radius = circle.getRadius();
-        this.circleColor = circle.getCircleColor();
-    }
-
     public int getCenterX() {
         return centerX;
     }

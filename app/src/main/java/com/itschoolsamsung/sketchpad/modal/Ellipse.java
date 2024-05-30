@@ -1,6 +1,6 @@
 package com.itschoolsamsung.sketchpad.modal;
 
-// Класс-наследник Oval для хранения размеров овала, введенных пользователем.
+// Класс-наследник Ellipse для хранения размеров овала, введенных пользователем.
 // Эти размеры используются для рисования овала в классе DrawingCanvas.
 public class Ellipse extends Shape {
     private int top;

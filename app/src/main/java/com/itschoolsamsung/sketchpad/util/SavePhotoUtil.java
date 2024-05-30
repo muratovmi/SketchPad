@@ -3,7 +3,6 @@ package com.itschoolsamsung.sketchpad.util;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -17,7 +16,7 @@ public class SavePhotoUtil {
     private static String sLastImageSavedName;
     private static Uri sLastImageUri;
 
-    public SavePhotoUtil(Context mContext) {
+    public SavePhotoUtil() {
     }
 
     public String saveToGallery(ContentResolver resolver, Bitmap bitmap, String title, String description) {

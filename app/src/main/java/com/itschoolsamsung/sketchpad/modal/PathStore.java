@@ -19,23 +19,11 @@ public class PathStore {
         return drawnPath;
     }
 
-    public void setDrawnPath(Path drawnPath) {
-        this.drawnPath = drawnPath;
-    }
-
     public int getPathColor() {
         return pathColor;
     }
 
-    public void setPathColor(int pathColor) {
-        this.pathColor = pathColor;
-    }
-
     public int getPathStroke() {
         return pathStroke;
-    }
-
-    public void setPathStroke(int pathStroke) {
-        this.pathStroke = pathStroke;
     }
 }

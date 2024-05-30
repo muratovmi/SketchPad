@@ -25,10 +25,6 @@ public class InputText extends Shape {
         return textInput;
     }
 
-    public void setTextInput(String textInput) {
-        this.textInput = textInput;
-    }
-
     public int getxLocation() {
         return xLocation;
     }
@@ -55,10 +51,6 @@ public class InputText extends Shape {
 
     public int getTextSize() {
         return textSize;
-    }
-
-    public void setTextSize(int textSize) {
-        this.textSize = textSize;
     }
 
     public int getTextWidth() {

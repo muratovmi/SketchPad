@@ -1,6 +1,0 @@
-<resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <integer name="seek_bar_min">1</integer>
-    <integer name="seek_bar_max">35</integer>
-</resources>

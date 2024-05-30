@@ -2,7 +2,6 @@ package com.itschoolsamsung.sketchpad.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -24,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,7 +36,6 @@ import com.itschoolsamsung.sketchpad.util.Constants;
 import com.itschoolsamsung.sketchpad.util.SavePhotoUtil;
 
 import java.io.File;
-import java.util.Objects;
 
 // Активити, содержащая холст для рисования, набор инструментов в нижней части экрана и боковую панель с палитрой цветов.
 public class DrawingBoard extends AppCompatActivity implements View.OnClickListener,
@@ -122,7 +121,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
             if (mPaintCanvas.getCurrentOperation() == Constants.OPERATION_FILL_VIEW)
                 mPaintCanvas.applyColorToView();
         } else {
-            Toast.makeText(DrawingBoard.this, "Operation not allowed with current selection!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(DrawingBoard.this, "Действие невозможно с текущим инструментом.", Toast.LENGTH_SHORT).show();
         }
         // Закрытие палитры цветов после выбора цвета.
         closeColorDrawer();
@@ -140,16 +139,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_ERASE);
                 break;
             case Constants.OPERATION_CLEAR_CANVAS:
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(DrawingBoard.this);
-                mBuilder.setTitle("New Drawing?");
-                mBuilder.setMessage("Start new drawing (you will lose the current drawing)?");
-                mBuilder.setPositiveButton("Yes", (dialog, which) -> {
-                    mPaintCanvas.clearCompleteCanvas();
-                    dialog.cancel();
-                });
-                mBuilder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
-                AlertDialog mDialog = mBuilder.create();
-                mDialog.show();
+                AlertDialog mDialog = getAlertDialog();
                 mDialog.setCanceledOnTouchOutside(false);
                 break;
             case Constants.OPERATION_UNDO:
@@ -171,7 +161,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
             case Constants.OPERATION_DRAW_OVAL:
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_OVAL);
                 mPaintCanvas.changeFillStyle(Constants.PAINT_STYLE_FILL);
-                drawCircleOnBoard(); // Changed method name
+                drawCircleOnBoard();
                 break;
             case Constants.OPERATION_INSERT_TEXT:
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_INSERT_TEXT);
@@ -186,6 +176,21 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    @NonNull
+    private AlertDialog getAlertDialog() {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(DrawingBoard.this);
+        mBuilder.setTitle("Новый холст");
+        mBuilder.setMessage("Создать новый холст (текущий будет удалён)?");
+        mBuilder.setPositiveButton("Да", (dialog, which) -> {
+            mPaintCanvas.clearCompleteCanvas();
+            dialog.cancel();
+        });
+        mBuilder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
+        AlertDialog mDialog = mBuilder.create();
+        mDialog.show();
+        return mDialog;
+    }
+
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
     }
@@ -197,41 +202,33 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
     // Переопределённый метод onStopTrackingTouch, который вызывается для изменения ширины обводки кисти или ластика.
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        Toast.makeText(this, " current stroke : " + seekBar.getProgress(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "текущее значение: " + seekBar.getProgress(), Toast.LENGTH_SHORT).show();
         mPaintCanvas.changeBrushStroke(seekBar.getProgress());
     }
 
     // Метод initiateSaveOperation, который сохраняет холст в галерее, перед этим запрашивая название будущего файла.
     public void initiateSaveOperation() {
         mBuilder = new AlertDialog.Builder(DrawingBoard.this);
-        mBuilder.setTitle("SAVE IMAGE AS");
+        mBuilder.setTitle("Сохранить изображение как");
         final EditText fileNameInput = new EditText(DrawingBoard.this);
         fileNameInput.setHint(R.string.file_name);
         fileNameInput.setSingleLine(true);
         mBuilder.setView(fileNameInput);
-        mBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (getCurrentFocus() != null) {
-                    InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                    keyboardManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
-                final String fileName = fileNameInput.getText().toString();
-                dialog.cancel();
-                // Небольшая задержка во избежание обрезки холста при сохранении в галерею.
-                if (fileName.toString().trim().length() > 0) {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            saveImageToGallery(fileName);
-                        }
-                    }, 1000);
-                } else {
-                    Toast.makeText(DrawingBoard.this, "Image can't be saved without a name", Toast.LENGTH_SHORT).show();
-                }
+        mBuilder.setPositiveButton("Да", (dialog, which) -> {
+            if (getCurrentFocus() != null) {
+                InputMethodManager keyboardManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                keyboardManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+            }
+            final String fileName = fileNameInput.getText().toString();
+            dialog.cancel();
+            // Небольшая задержка во избежание обрезки холста при сохранении в галерею.
+            if (!fileName.trim().isEmpty()) {
+                mHandler.postDelayed(() -> saveImageToGallery(fileName), 1000);
+            } else {
+                Toast.makeText(DrawingBoard.this, "Изображение не может быть сохранено без имени.", Toast.LENGTH_SHORT).show();
             }
         });
-        mBuilder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
+        mBuilder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
         mDialog = mBuilder.create();
         mDialog.show();
         mDialog.setCanceledOnTouchOutside(false);
@@ -240,12 +237,12 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
     // Метод saveImageToGallery, который (не) подтверждает сохранение холста в галерею.
     public void saveImageToGallery(final String fileName) {
         mBuilder = new AlertDialog.Builder(DrawingBoard.this);
-        mBuilder.setTitle("SAVE");
-        mBuilder.setMessage("Save the drawing to Memory?");
-        mBuilder.setPositiveButton("Yes", (dialog, which) -> {
+        mBuilder.setTitle("Сохранение изображения");
+        mBuilder.setMessage("Сохранить изображение в память устройства?");
+        mBuilder.setPositiveButton("Да", (dialog, which) -> {
             mPaintCanvas.setDrawingCacheEnabled(true);
             Bitmap bitmap = mPaintCanvas.getDrawingCache();
-            String imgSaved = (new SavePhotoUtil(DrawingBoard.this)).saveToGallery(getContentResolver(), bitmap, fileName + ".png", "drawing");
+            String imgSaved = (new SavePhotoUtil()).saveToGallery(getContentResolver(), bitmap, fileName + ".png", "drawing");
             if (imgSaved != null) {
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 File f = new File("file://" + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
@@ -253,17 +250,17 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
                 mediaScanIntent.setData(contentUri);
                 sendBroadcast(mediaScanIntent);
                 Toast savedToast = Toast.makeText(getApplicationContext(),
-                        "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
+                        "Изображение сохранено в галерею!", Toast.LENGTH_SHORT);
                 savedToast.show();
             } else {
                 Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                        "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
+                        "Ой! Не получилось сохранить изображение в галерею.", Toast.LENGTH_SHORT);
                 unsavedToast.show();
             }
             mPaintCanvas.destroyDrawingCache();
             dialog.cancel();
         });
-        mBuilder.setNegativeButton("No", (dialog, which) -> dialog.cancel());
+        mBuilder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
         mDialog = mBuilder.create();
         mDialog.show();
         mDialog.setCanceledOnTouchOutside(false);
@@ -273,7 +270,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
     // Запрашивает у пользователя радиус окружности.
     public void drawCircleOnBoard() {
         mBuilder = new AlertDialog.Builder(DrawingBoard.this);
-        mBuilder.setTitle("Parameter!");
+        mBuilder.setTitle("Окружность");
         final View view = mInflater.inflate(R.layout.shape_input, null);
         final EditText Circlerad = view.findViewById(R.id.circle_radius);
         LinearLayout RectangleWidthLayout = view.findViewById(R.id.rectangle_width_layout);
@@ -281,16 +278,16 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
         RectangleHeightLayout.setVisibility(View.GONE);
         RectangleWidthLayout.setVisibility(View.GONE);
         mBuilder.setView(view);
-        mBuilder.setPositiveButton("OK", (dialog, which) -> {
+        mBuilder.setPositiveButton("ОК", (dialog, which) -> {
             if (!Circlerad.getText().toString().trim().isEmpty()) {
                 mPaintCanvas.drawCircle(Integer.parseInt(Circlerad.getText().toString()));
                 openColorDrawer();
             } else {
-                Toast.makeText(DrawingBoard.this, "Circle radius missing!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawingBoard.this, "Нет радиуса окружности!", Toast.LENGTH_SHORT).show();
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
             }
         });
-        mBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+        mBuilder.setNegativeButton("Отмена", (dialog, which) -> {
             mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
             dialog.cancel();
         });
@@ -303,26 +300,26 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
     public void drawRectangleOnBoard() {
         mBuilder = new AlertDialog.Builder(DrawingBoard.this);
         if (mPaintCanvas.getCurrentOperation() == Constants.OPERATION_DRAW_RECTANGLE)
-            mBuilder.setTitle("Rectangle Dimensions");
+            mBuilder.setTitle("Прямоугольник");
         else
-            mBuilder.setTitle("Oval Dimensions");
+            mBuilder.setTitle("Овал");
         final View view = mInflater.inflate(R.layout.shape_input, null);
         LinearLayout CircleLayout = view.findViewById(R.id.circle_radius_layout);
         CircleLayout.setVisibility(View.GONE);
         final EditText RectWidth = view.findViewById(R.id.rectangle_width);
         final EditText RectHeight = view.findViewById(R.id.rectangle_heigth);
         mBuilder.setView(view);
-        mBuilder.setPositiveButton("OK", (dialog, which) -> {
+        mBuilder.setPositiveButton("ОК", (dialog, which) -> {
             if (!RectWidth.getText().toString().trim().isEmpty() && !RectHeight.getText().toString().trim().isEmpty()) {
                 mPaintCanvas.drawRectangle(Integer.parseInt(RectWidth.getText().toString()),
                         Integer.parseInt(RectHeight.getText().toString()));
                 openColorDrawer();
             } else {
-                Toast.makeText(DrawingBoard.this, "Dimension missing!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawingBoard.this, "Нет размеров!", Toast.LENGTH_SHORT).show();
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
             }
         });
-        mBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+        mBuilder.setNegativeButton("Отмена", (dialog, which) -> {
             mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
             dialog.cancel();
         });
@@ -334,21 +331,21 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
     // Запрашивает у пользователя текст, который нужно поместить на холст.
     public void getTextInputFromUser() {
         mBuilder = new AlertDialog.Builder(DrawingBoard.this);
-        mBuilder.setTitle("Create Text Input!");
+        mBuilder.setTitle("Вставка текста");
         final View view = mInflater.inflate(R.layout.text_input_layout, null);
         final EditText text = view.findViewById(R.id.input_text);
         final EditText textSize = view.findViewById(R.id.text_size);
         mBuilder.setView(view);
-        mBuilder.setPositiveButton("OK", (dialog, which) -> {
+        mBuilder.setPositiveButton("ОК", (dialog, which) -> {
             if (!text.getText().toString().trim().isEmpty() && !textSize.getText().toString().trim().isEmpty()) {
                 mPaintCanvas.createTextBox(text.getText().toString().trim(), Integer.parseInt(textSize.getText().toString().trim()));
                 openColorDrawer();
             } else {
                 mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
-                Toast.makeText(DrawingBoard.this, "Input missing!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawingBoard.this, "Нет текста!", Toast.LENGTH_SHORT).show();
             }
         });
-        mBuilder.setNegativeButton("Cancel", (dialog, which) -> {
+        mBuilder.setNegativeButton("Отмена", (dialog, which) -> {
             mPaintCanvas.setCurrentOperation(Constants.OPERATION_DRAW_PENCIL);
             dialog.cancel();
         });
@@ -362,7 +359,7 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), Constants.RESULT_LOAD_IMAGE);
+        startActivityForResult(Intent.createChooser(intent, "Выбрать изображение"), Constants.RESULT_LOAD_IMAGE);
     }
 
     // Переопределённый метод onActivityResult, который получает изображение из галереи.

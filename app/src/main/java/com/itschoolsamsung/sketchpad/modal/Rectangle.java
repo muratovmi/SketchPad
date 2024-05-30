@@ -17,14 +17,6 @@ public class Rectangle extends Shape {
         this.color = color;
     }
 
-    public Rectangle(Rectangle rect) {
-        this.top = rect.top;
-        this.bottom = rect.bottom;
-        this.left = rect.left;
-        this.right = rect.right;
-        this.color = rect.color;
-    }
-
     public int getTop() {
         return top;
     }

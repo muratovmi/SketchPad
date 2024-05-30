@@ -297,10 +297,6 @@ public class DrawingCanvas extends View {
         invalidate();
     }
 
-    public String getBrushColor() {
-        return Integer.toHexString(mBrushPaint.getColor()).toUpperCase().substring(2);
-    }
-
     public void undoPreviousOperation() {
         if (mShapeList != null && !mShapeList.isEmpty()) {
             mShapeList.remove(mShapeList.size() - 1);
@@ -311,7 +307,6 @@ public class DrawingCanvas extends View {
     }
 
     public class CustomGestureDetector extends GestureDetector.SimpleOnGestureListener {
-        private Context mDetectorContext;
         private int xTouchPos;
         private int yTouchPos;
 

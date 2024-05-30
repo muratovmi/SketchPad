@@ -16,9 +16,7 @@ public class Constants {
     public static final int OPERATION_DRAW_OVAL = 8;
     public static final int OPERATION_SET_BACKGROUND = 9;
     public static final int OPERATION_SAVE_IMAGE = 10;
-    public static final int OPERATION_SAVE_IMAGE_TO_SERVER = 11;
     public static final int OPERATION_MOVE_VIEW = 20;
     public static final int OPERATION_FILL_VIEW = 21;
-    public static final String UPLOAD_URL = "http://vandroid.web44.net/upload_pic.php";
     public static final int RESULT_LOAD_IMAGE = 100;
 }

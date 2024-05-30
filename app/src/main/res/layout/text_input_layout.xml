@@ -1,37 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:orientation="vertical">
 
     <EditText
+        android:id="@+id/input_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/input_text"
-        android:hint="Enter text here" />
+        android:autofillHints=""
+        android:hint="@string/text"
+        tools:ignore="TextFields" />
 
     <LinearLayout
+        android:id="@+id/circle_radius_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="20px"
-        android:id="@+id/circle_radius_layout">
+        android:layout_margin="20dp"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="2"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:layout_weight="2"
+            android:text="@string/size"
             android:textColor="#000000"
-            android:text="Text Size : " />
+            android:textSize="20sp" />
 
         <EditText
+            android:id="@+id/text_size"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:autofillHints=""
             android:inputType="number"
-            android:id="@+id/text_size"
             android:maxLength="2" />
     </LinearLayout>
 </LinearLayout>
