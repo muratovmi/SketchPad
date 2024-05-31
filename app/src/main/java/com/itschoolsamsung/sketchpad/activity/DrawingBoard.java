@@ -2,6 +2,7 @@ package com.itschoolsamsung.sketchpad.activity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -257,7 +258,6 @@ public class DrawingBoard extends AppCompatActivity implements View.OnClickListe
                         "Ой! Не получилось сохранить изображение в галерею.", Toast.LENGTH_SHORT);
                 unsavedToast.show();
             }
-            mPaintCanvas.destroyDrawingCache();
             dialog.cancel();
         });
         mBuilder.setNegativeButton("Нет", (dialog, which) -> dialog.cancel());
